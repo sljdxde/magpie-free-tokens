@@ -8,3 +8,4 @@ node_modules/
 .DS_Store
 # 内部调研/规划草稿（wayfinder 追踪），不公开
 .scratch/
+*.tgz

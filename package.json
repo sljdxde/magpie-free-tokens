@@ -37,5 +37,14 @@
         "en": "Token Freebies"
       }
     }
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sljdxde/magpie-free-tokens.git"
+  },
+  "homepage": "https://github.com/sljdxde/magpie-free-tokens",
+  "bugs": {
+    "url": "https://github.com/sljdxde/magpie-free-tokens/issues"
+  },
+  "author": "Mingchen Yu <502460524@qq.com>"
 }
