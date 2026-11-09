@@ -2,8 +2,8 @@
 (() => {
   "use strict";
   const hasBridge = typeof window.magpie !== "undefined" && window.magpie && window.magpie.ready;
-  function mockBridge() { const dark = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches; return { ready: Promise.resolve({ dark }), theme: { dark }, options: { get: async () => ({}), set: async (o) => o }, read: async () => ({}), onTheme() {} }; }
-  const MAG = hasBridge ? window.magpie : mockBridge();
+  function previewBridge() { const dark = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches; return { ready: Promise.resolve({ dark }), theme: { dark }, options: { get: async () => ({}), set: async (o) => o }, read: async () => ({}), onTheme() {} }; }
+  const MAG = hasBridge ? window.magpie : previewBridge();
 
   const KIND = { daily: "每天", monthly: "每月", once: "新人", limited: "限时", free: "免费" };
   const TABS = [["ready", "已配置可用", "已装好并登录，可直接用"], ["setup", "有插件待配置", "有插件，还没装或没登录"], ["none", "暂无插件", "还没有对应的 magpie 插件"]];
@@ -48,7 +48,8 @@
       else sub = `<span class="dot ok"></span>可用`;
     } else if (b.key === "setup") {
       sub = `<span class="dot mut"></span>插件：${esc(b.m.name)}`;
-      act = `<button class="cta primary" data-act="${b.mode}" data-name="${esc(b.m.name)}" data-npm="${esc(b.m.npm)}">${b.mode === "login" ? "去登录" : "安装插件"}</button>`;
+      const pid = resolvePid(d, b.m);
+      act = `<button class="cta primary" data-act="${b.mode}" data-name="${esc(b.m.name)}" data-npm="${esc(b.m.npm)}" data-pid="${esc(pid)}">${b.mode === "login" ? "去登录" : "安装插件"}</button>`;
     } else {
       sub = `<span class="dot mut"></span>暂无可用插件`;
       act = url ? `<button class="cta" data-act="copy" data-url="${esc(url)}">复制链接</button>` : "";
@@ -96,7 +97,7 @@
   }
 
   function wire() { if (wired) return; wired = true; $("#q").addEventListener("input", (e) => { state.q = e.target.value; renderList(); }); }
-  function boot() { const d = window.__FREE_TOKENS__ || window.__MOCK__; if (!d) return false; if (d.error) { applyData({ meta: d.meta || {}, deals: [], mapping: {}, demoState: { installed: {}, configKnown: true, checkinKnown: true } }); showMessage("数据源暂不可用（AIHOT 无法访问）。稍后重试。"); return true; } applyData(d); render(); return true; }
+  function boot() { const d = window.__FREE_TOKENS__; if (!d) return false; if (d.error) { applyData({ meta: d.meta || {}, deals: [], mapping: {}, demoState: { installed: {}, configKnown: true, checkinKnown: true } }); showMessage("数据源暂不可用（AIHOT 无法访问）。稍后重试。"); return true; } applyData(d); render(); return true; }
   let tick = 0;
   function inject() { if (!hasBridge) return; const s = document.createElement("script"); s.src = "data.js?t=" + Date.now() + "-" + (tick++); s.onload = () => { const d = window.__FREE_TOKENS__; if (d && d !== DATA_REF) { applyData(d); render(); } }; s.onerror = () => {}; document.head.appendChild(s); }
 

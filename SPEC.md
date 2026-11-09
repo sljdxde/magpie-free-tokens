@@ -228,7 +228,7 @@ export default { id: "free-tokens", server: FreeTokens };
 
 **厂商图标**：优先用 **magpie 自带的品牌图标**（从 `internal/gui/assets/icons` 拷入 `page/brand/`，已覆盖 22 家，如 doubao-color.svg / minimax-color.svg / opencode.svg / qoder.svg …）；表外的厂商一律用**首字母/首字色块**兜底。图标随包内置、本地同源加载，不联网抓图，也不再用 AIHOT 的 favicon（此前 favicon 是 WebP 却存成 .png，WebKit 渲染异常——已弃用）。
 
-**复制与登录引导（沙盒限制的应对）**：插件页 iframe 的 `navigator.clipboard` 常被拦，故「安装插件 / 去登录」都弹出**气泡**：含分步路径 + 一个 `readonly` 已全选的输入框（保证可 ⌘C/Ctrl+C 手动复制），并尝试自动复制。安装气泡给的是**可直接粘进「插件 → 发现」页最下方「已有想装的?」输入框的 npm 包名**（如 `@magpie-community/opencode-zed-auth`；该框接受 npm 包名 / `github:owner/repo` / 本机文件夹，不接受整条命令），并附终端命令 `magpie plugin add <社区短名>`（短名如 zed/qoder/minimax；豆包无短名用 `npm:<包>`）。登录给「插件→已安装→该行登录」路径 + `magpie plugin login <pid>`。
+**复制与登录引导（沙盒限制的应对）**：插件页 iframe 的 `navigator.clipboard` 常被拦，故「安装插件 / 去登录」都弹出**气泡**：含分步路径 + 一个 `readonly` 已全选的输入框（保证可 ⌘C/Ctrl+C 手动复制），并尝试自动复制。安装气泡给的是**可直接粘进「插件 → 发现」页最下方「已有想装的?」输入框的 npm 包名**（如 `@magpie-community/opencode-zed-auth`；该框接受 npm 包名 / `github:owner/repo` / 本机文件夹，不接受整条命令），并附终端命令 `magpie plugin add <完整 npm 包名>`（如 `magpie plugin add @magpie-community/opencode-zed-auth`；**不用短名**——短名可能命中被抢注的无作用域包）。登录给「插件→已安装→该行登录」路径 + `magpie plugin login <pid>`。
 
 > 原型见 `page/`，截图 `preview-ready.jpg` / `preview-setup.jpg` / `preview-dark.jpg`（三档视图）。
 
@@ -247,18 +247,22 @@ magpie-free-tokens/
 ├─ package.json          # main + magpie.page{title,file,icon}
 ├─ index.js              # (生产) Bun 主模块：定时 fetch+解码+读配置 → 写 page/data.js
 ├─ src/
-│  ├─ aihot.js           # free-tokens.data 客户端 + turbo-stream 解码 + 结构守卫
-│  ├─ inventory.js       # 读 plugin-providers / plugin-checkin / plugins（同 quota-keepalive）
-│  ├─ classify.js        # 三态 + 映射（§5 / §6）
-│  ├─ mapping.json       # 羊毛→插件（首版 12 条 + 自动兜底）
-│  └─ snapshot.js        # 组装快照 + writeAtomic
+│  ├─ aihot.js           # free-tokens.data 客户端（可注入 fetch）
+│  ├─ inventory.js       # 读 plugin-providers / plugin-checkin（读失败=未知；不读 plugins.json）
+│  ├─ classify.js        # 白名单过滤 + 脱敏 + 三态（§5/§6）
+│  ├─ allowlist.js       # 官方厂商白名单（排除中转站）
+│  ├─ mapping.js         # 羊毛→插件（完整 npm 包名）
+│  └─ turbo.js           # turbo-stream 解码
+├─ index.js              # host：打开页面时拉一次 → 写 page/data.js（不后台轮询）
+├─ cli.js                # 手动跑一次（dev）
 ├─ page/
 │  ├─ index.html         # 页面骨架
-│  ├─ app.js             # 渲染 + 三态 + 筛选 + 倒计时（读 __FREE_TOKENS__ / __MOCK__）
+│  ├─ app.js             # 渲染 + 三态 + 筛选（仅读 __FREE_TOKENS__；跟随 magpie 主题）
 │  ├─ style.css          # magpie token + 亮/暗
-│  ├─ mock-data.js       # 原型：真实 45 条快照 + 映射 + demo 状态
+│  ├─ brand/             # 内置品牌图标（见 NOTICE）
 │  ├─ icon.svg
 │  └─ data.js            # 运行时生成（git 忽略，不进 npm 包）
+├─ test/                 # 单元测试（100% 行覆盖）
 └─ README.md
 ```
 
@@ -269,7 +273,7 @@ magpie-free-tokens/
 
 ## 10. 合规（AIHOT）
 
-**结论：免费、无广告、无赞助的社区插件允许，无需书面授权。** 依据条款 v1.1 §3「个人…制作不收费、不带广告和赞助、不面向客户交付的小工具、Agent 与非商业自动化」+「合理私有缓存」；关键是**每台机器直连 AIHOT**，不是作者自建中转供数。
+**结论（按 review 修正）：个人非商业小工具可读，但「面向公众的插件」（发布公开 npm / 插件市场）属 §4 需书面授权的场景——上架前必须取得 AIHOT 授权。** 已移除随包快照、改为打开页面直连单次拉取并按要求署名；授权是上架前置条件。
 
 - **一旦触发，须先发 `agent@virxact.com` 取得书面授权**：收费 / 接赞助 / 挂广告 / 面向客户或公众的商业产品 / 自建聚合 API / 公开镜像 / 把缓存做成可导出数据集。「标注数据来源」不能代替授权。
 - **署名（建议，成本极低）**：页脚放可点击的「数据源：AIHOT · Token 羊毛（https://aihot.news/free-tokens）」；用「数据源 / 数据来自」，**禁用**「官方 / 合作 / 授权 / 认证 / 独家」；每条「去用」跳 `deal.url`（厂商原始链接）而非站内页；**不使用 AIHOT 的 Logo / 视觉素材**。
@@ -281,9 +285,9 @@ magpie-free-tokens/
 
 - UA 用**诚实自定义串**（如 `magpie-free-tokens/0.1 (+local-desktop-plugin)`），不伪装浏览器。
 - 该端点**无 ETag / Last-Modified**，条件请求无效；只能靠本地 TTL 降频（每次约 47KB）。
-- 刷新间隔 **5-10 分钟**（用户打开页面时拉一次）；`max-age=59` 视为最小间隔。
+- 刷新：**打开页面（宿主启动）时拉一次，不做后台轮询**；该端点无 ETag，故不频繁轮询。
 - 开 `Accept-Encoding: gzip, br` 省 4-8 倍流量；429/503 读 `Retry-After` 指数退避。
-- 首次失败 / 结构变更：保留上次快照（内置 `data/snapshot.json` / 上次 `data.js`）并提示「数据源暂不可用 · 可能过期」，**不清空 UI**；加字段集校验（应恒为 25）。
+- 拉取失败：写入 `{error:true}` 标记，页面显示「数据源暂不可用」；**不内置/随包分发任何快照**。
 
 ---
 
@@ -303,8 +307,8 @@ magpie-free-tokens/
 ## 13. 实施计划
 
 * **P0（已完成）**：page 骨架 + 假数据卡片册 + 亮/暗原型（截图）。
-* **P1**：`index.mjs` 本地服务 + turbo-stream 解码 + 本机扫描 + 三态接口；`app.js` 切到 fetch。
-* **P2**：完善 `data/mapping.json`（45 条尽量覆盖）+ `snapshot.json` 兜底。
+* **P1**：`index.js` host + turbo-stream 解码 + 本机扫描 + 三态；`app.js` 读 data.js。
+* **P2**：完善 `src/mapping.js` 覆盖 + `src/allowlist.js` 官方厂商维护。
 * **P3**：UI 打磨（图标、空/载入态、磁贴密度、i18n 预留）。
 * **P4**：真机验证（macOS magpie app + `magpie web`），跑 `magpie plugin add ./`。
 * **P5**：`magpie plugin add` 自测 → 打 `magpie-plugin` topic / 提 registry PR → 联系 AIHOT 授权。
@@ -312,9 +316,9 @@ magpie-free-tokens/
 ## 14. 验收标准
 
 1. `magpie plugin add <path>` 后，侧栏出现「Token 羊毛」页，亮/暗均正常。
-2. 45 条羊毛卡片正确渲染；四态（已领/已装未领/待安装/暂无插件）判定与本机实际一致。
+2. 三档（已配置可用/有插件待配置/暂无插件）判定与本机实际一致；签到读失败不误报「可领」。
 3. 汇总条、类别/状态筛选、搜索、倒计时、卡片展开均可用。
-4. 断网 / `.data` 变更时用快照兜底并提示，不白屏。
+4. 断网 / `.data` 失败时显示「数据源暂不可用」，不内置快照。
 5. 页脚有"数据源：AIHOT"署名与外链。
 6. 仅读非机密数据；不索取任何密钥。
 
@@ -322,6 +326,6 @@ magpie-free-tokens/
 
 ## 附录：原型如何预览/加载
 
-* **独立预览**：直接开 `page/index.html`（`_magpie/bridge.js` 404 时 app.js 自动用本地兜底与系统主题）。
+* **独立预览**：直接开 `page/index.html`（无 bridge/数据时显示「数据准备中」；主题跟随系统）。
 * **加载进 magpie**：`magpie plugin add /Users/yuzhou/004个人代码仓库/free-token-monitor`（本原型为 page-only + 假数据，不联网、不起宿主）。
-* **数据**：`page/mock-data.js` 为真实 aihot 快照（2026-11-09）+ demo 本机状态（取自真实 `~/.config/magpie`）。
+* **数据**：运行时由 host 拉取 AIHOT 写入 `page/data.js`；仓库不内置任何 AIHOT 快照，mock 数据仅存于 `test/` 临时构造。
