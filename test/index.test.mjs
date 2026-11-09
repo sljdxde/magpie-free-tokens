@@ -20,7 +20,7 @@ test("refresh success writes payload (opts injected)", async () => {
 test("refresh failure writes error marker, returns null", async () => {
   const out = path.join(tmp(), "data.js");
   const p = await refresh({}, { configDir: () => "/x", readLocal: () => ({ providers: [], checkin: {} }), fetchFreeTokens: async () => { throw new Error("boom"); }, dataPath: out });
-  assert.equal(p, null);
+  assert.strictEqual(p, null);
   assert.match(fs.readFileSync(out, "utf8"), /error: true/);
 });
 test("refresh default dataPath via env", async () => {
