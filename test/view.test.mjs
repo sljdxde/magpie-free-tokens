@@ -60,3 +60,15 @@ test("installSteps uses full npm; loginSteps given", () => {
   assert.match(s[1], /magpie plugin add @magpie-community\/opencode-zed-auth/);
   const l = V.loginSteps("Qoder", "qoder-cn"); assert.match(l[0], /Qoder/);
 });
+
+test("actionOf builds install/login/copy payloads from dataset", () => {
+  const ins = V.actionOf({ act: "install", name: "Zed", npm: "@magpie-community/opencode-zed-auth" });
+  assert.equal(ins.copyText, "@magpie-community/opencode-zed-auth");
+  assert.match(ins.steps[1], /magpie plugin add @magpie-community\/opencode-zed-auth/);
+  const lg = V.actionOf({ act: "login", name: "Qoder", pid: "qoder-cn" });
+  assert.equal(lg.copyText, "magpie plugin login qoder-cn");
+  const cp = V.actionOf({ act: "copy", url: "https://e/x" }); assert.equal(cp.copyText, "https://e/x");
+  assert.equal(V.actionOf({ act: "copy", url: "javascript:1" }), null);
+  assert.equal(V.actionOf({ act: "weird" }), null);
+  assert.equal(V.actionOf(null), null);
+});

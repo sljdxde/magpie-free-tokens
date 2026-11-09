@@ -5,7 +5,7 @@
   "use strict";
   if (!window.FTView) { document.addEventListener("DOMContentLoaded", () => { const el = document.getElementById("list"); if (el) el.innerHTML = '<div class="empty">页面资源加载失败（view.js 未加载）</div>'; }); return; }
   const V = window.FTView;
-  const { KIND, esc, safeUrl, bucketOf, counts, summaryHtml, rowHtml, installSteps, loginSteps } = V;
+  const { esc, bucketOf, counts, summaryHtml, rowHtml, actionOf } = V;
 
   const hasBridge = typeof window.magpie !== "undefined" && window.magpie && window.magpie.ready;
   function previewBridge() { const dark = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches; return { ready: Promise.resolve({ dark }), theme: { dark }, options: { get: async () => ({}), set: async (o) => o }, read: async () => ({}), onTheme() {} }; }
@@ -50,12 +50,7 @@
   }
   function showMessage(msg) { $("#list").innerHTML = `<div class="empty">${esc(msg)}</div>`; $("#empty").style.display = "none"; }
 
-  function onAction(btn) {
-    const a = btn.dataset.act;
-    if (a === "install") { popover({ title: `安装插件：${btn.dataset.name}`, steps: installSteps(btn.dataset.npm), copyText: btn.dataset.npm }); }
-    else if (a === "login") { const pid = btn.dataset.pid; popover({ title: `登录：${btn.dataset.name}`, steps: loginSteps(btn.dataset.name, pid), copyText: pid ? `magpie plugin login ${pid}` : "" }); }
-    else if (a === "copy") { const url = safeUrl(btn.dataset.url); if (url) popover({ title: "来源链接", steps: ["页面沙盒不能直接打开外链，复制后到浏览器打开。"], copyText: url }); }
-  }
+  function onAction(btn) { const a = actionOf(btn.dataset); if (a) popover(a); }
 
   async function copyText(txt) { try { if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(txt); return true; } } catch {} try { const ta = document.createElement("textarea"); ta.value = txt; ta.style.position = "fixed"; ta.style.top = "-1000px"; document.body.appendChild(ta); ta.focus(); ta.select(); const ok = document.execCommand("copy"); ta.remove(); return ok; } catch { return false; } }
   function closePop() { const p = $("#pop-wrap"); if (p) p.remove(); }

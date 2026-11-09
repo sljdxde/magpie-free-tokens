@@ -23,6 +23,13 @@
   // 安装/登录气泡的文案（纯函数，便于单测：确保用完整 npm 包名，不用短名）
   function installSteps(npm) { return ["在 magpie「插件 → 发现」页最下方「已有想装的?」输入框，粘贴下面的包名，点「安装」", `（终端方式：magpie plugin add ${npm}）`]; }
   function loginSteps(name, pid) { return [`magpie →「插件 → 已安装」，找到「${name}」那一行`, "点该行「登录」，按提示完成（浏览器 / 设备码）"]; }
+  function actionOf(ds) {
+    if (!ds || !ds.act) return null;
+    if (ds.act === "install") return { title: `安装插件：${ds.name}`, steps: installSteps(ds.npm), copyText: ds.npm };
+    if (ds.act === "login") return { title: `登录：${ds.name}`, steps: loginSteps(ds.name, ds.pid), copyText: ds.pid ? `magpie plugin login ${ds.pid}` : "" };
+    if (ds.act === "copy") { const url = safeUrl(ds.url); return url ? { title: "来源链接", steps: ["页面沙盒不能直接打开外链，复制后到浏览器打开。"], copyText: url } : null; }
+    return null;
+  }
   function rowHtml(d, ctx) {
     const { mapping, demoState, icons } = ctx;
     const b = bucketOf(d, mapping, demoState);
@@ -46,6 +53,6 @@
     }
     return `<div class="row">${avatarHtml(d.provider, icons)}<div class="rmain"><div class="rprov">${esc(d.provider)} <span class="tag">${esc(KIND[d.kind] || d.kind || "")}</span></div><div class="rtitle">${esc(d.title)}</div><div class="rsub">${sub}</div></div><div class="rright"><div class="rval">${esc(yuan)}${yuanSub}</div>${act}</div></div>`;
   }
-  const api = { KIND, esc, safeUrl, colorFor, initials, fmtYuan, resolvePid, bucketOf, counts, avatarHtml, summaryHtml, installSteps, loginSteps, rowHtml };
+  const api = { KIND, esc, safeUrl, colorFor, initials, fmtYuan, resolvePid, bucketOf, counts, avatarHtml, summaryHtml, installSteps, loginSteps, actionOf, rowHtml };
   root.FTView = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);

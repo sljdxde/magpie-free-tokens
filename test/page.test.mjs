@@ -42,3 +42,7 @@ test("package declares page + NOTICE", () => {
   assert.ok(pkg.files.includes("NOTICE"));
   if (String(pkg.name).startsWith("@magpie-community/")) assert.equal(pkg.repository.directory, "packages/free-tokens");
 });
+
+test("app.js delegates click decisions to view.actionOf", () => {
+  assert.match(app, /actionOf\(btn\.dataset\)/);
+});
