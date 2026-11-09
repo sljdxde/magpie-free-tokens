@@ -1,0 +1,10 @@
+# 运行时生成（Bun 每次刷新写入；不入库/不发包）
+page/data.js
+page/data.js.tmp
+# 旧的远端图标残留（改用 page/brand/ 内置品牌图）
+page/icons/
+# 依赖 & 系统
+node_modules/
+.DS_Store
+# 内部调研/规划草稿（wayfinder 追踪），不公开
+.scratch/
