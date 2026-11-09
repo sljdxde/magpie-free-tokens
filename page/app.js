@@ -3,6 +3,7 @@
 // origin 为 null，module script 走 CORS 会被拒（见 review）。
 (function () {
   "use strict";
+  if (!window.FTView) { document.addEventListener("DOMContentLoaded", () => { const el = document.getElementById("list"); if (el) el.innerHTML = '<div class="empty">页面资源加载失败（view.js 未加载）</div>'; }); return; }
   const V = window.FTView;
   const { KIND, esc, safeUrl, bucketOf, counts, summaryHtml, rowHtml, installSteps, loginSteps } = V;
 
