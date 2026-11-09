@@ -8,7 +8,7 @@ import { configDir, readLocal } from "../src/inventory.js";
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "ft-inv-"));
 const withEnv = (env, fn) => { const old = {}; for (const k of Object.keys(env)) { old[k] = process.env[k]; if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k]; } try { return fn(); } finally { for (const k of Object.keys(old)) { if (old[k] === undefined) delete process.env[k]; else process.env[k] = old[k]; } } };
 
-test("configDir: input.directory that holds the file wins", () => withEnv({ MAGPIE_CONFIG_DIR: undefined, XDG_CONFIG_HOME: undefined }, () => {
+test("configDir: input.directory (settings.Dir) wins", () => withEnv({ MAGPIE_CONFIG_DIR: undefined, XDG_CONFIG_HOME: undefined }, () => {
   const d = tmp(); fs.writeFileSync(path.join(d, "plugin-providers.json"), "[]");
   assert.equal(configDir({ directory: d }), d);
 }));
@@ -20,10 +20,13 @@ test("configDir: XDG fallback", () => withEnv({ MAGPIE_CONFIG_DIR: undefined }, 
   const x = tmp(); fs.mkdirSync(path.join(x, "magpie")); fs.writeFileSync(path.join(x, "magpie", "plugin-providers.json"), "[]");
   assert.equal(withEnv({ XDG_CONFIG_HOME: x }, () => configDir({})), path.join(x, "magpie"));
 }));
-test("configDir: home fallback when nothing found (injected empty home)", () => withEnv({ MAGPIE_CONFIG_DIR: undefined, XDG_CONFIG_HOME: undefined }, () => {
+test("configDir: home fallback when no input (injected empty home)", () => withEnv({ MAGPIE_CONFIG_DIR: undefined, XDG_CONFIG_HOME: undefined }, () => {
   const h = tmp();
-  const got = configDir({ directory: path.join(h, "nope") }, h);
+  const got = configDir({}, h);
   assert.equal(got, path.join(h, ".config", "magpie"));
+}));
+test("configDir: trusts input.directory even without files (portable fresh)", () => withEnv({ MAGPIE_CONFIG_DIR: undefined, XDG_CONFIG_HOME: undefined }, () => {
+  assert.equal(configDir({ directory: "/portable/data" }, "/home/u"), "/portable/data");
 }));
 
 test("readLocal: valid providers + checkin", () => {

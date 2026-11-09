@@ -2,17 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 
-// magpie 配置目录：MAGPIE_CONFIG_DIR / input.directory(仅当其确含 plugin-providers.json) /
-// $XDG_CONFIG_HOME/magpie / ~/.config/magpie。绝不回落到宿主工作目录。
+// 配置目录：magpie 通过 input.directory 传的是 settings.Dir()
+// （internal/plugin/host.go:1160；portable 时=数据目录，否则 ~/.config/magpie），直接信任它。
+// 其余仅作离线/测试兜底，绝不回落到宿主工作目录。
 export function configDir(input, homedir = os.homedir()) {
-  const cand = [];
-  if (process.env.MAGPIE_CONFIG_DIR) cand.push(process.env.MAGPIE_CONFIG_DIR);
-  if (input && input.directory) cand.push(input.directory);
-  if (process.env.XDG_CONFIG_HOME) cand.push(path.join(process.env.XDG_CONFIG_HOME, "magpie"));
-  cand.push(path.join(homedir, ".config", "magpie"));
-  for (const d of cand) { try { if (fs.existsSync(path.join(d, "plugin-providers.json"))) return d; } catch {} }
-  // 都不含：返回标准配置目录（不是宿主工作目录）
-  return process.env.XDG_CONFIG_HOME ? path.join(process.env.XDG_CONFIG_HOME, "magpie") : path.join(homedir, ".config", "magpie");
+  if (process.env.MAGPIE_CONFIG_DIR) return process.env.MAGPIE_CONFIG_DIR;
+  if (input && input.directory) return input.directory;
+  if (process.env.XDG_CONFIG_HOME) return path.join(process.env.XDG_CONFIG_HOME, "magpie");
+  return path.join(homedir, ".config", "magpie");
 }
 
 // 读本机状态：文件缺失 = 空（fresh）；存在但解析失败 = null（未知，不做签到判断）。
