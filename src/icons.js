@@ -2,14 +2,12 @@
 // 不在表里的厂商，前端用“首字母/首字”色块兜底。
 export const BRAND = {
   "豆包": "doubao-color.svg",
-  "魔搭社区": "modelscope-color.svg",
   "Cloudflare": "cloudflare-color.svg",
   "MiniMax": "minimax-color.svg",
   "阿里云 Qoder": "qoder.svg",
   "字节 TRAE": "trae.svg",
   "腾讯 WorkBuddy": "workbuddy-color.svg",
   "百度千帆": "baidu-color.svg",
-  "硅基流动": "siliconcloud-color.svg",
   "阿里云百炼": "bailian-color.svg",
   "DeepSeek": "deepseek-color.svg",
   "腾讯云 TokenHub": "hunyuan-color.svg",
