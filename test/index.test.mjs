@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { refresh } from "../index.js";
+import { refresh } from "../src/refresh.js";
 import pkg from "../index.js";
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "ft-idx-"));
