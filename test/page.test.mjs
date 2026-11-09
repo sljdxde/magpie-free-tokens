@@ -16,6 +16,13 @@ test("page only reads declared permissions (none)", () => {
   assert.ok(!/magpie\.read\s*\(/.test(app), "page must not call magpie.read");
   assert.ok(!pkg.magpie.permissions || pkg.magpie.permissions.length === 0);
 });
+test("page uses classic scripts, not ES modules (sandbox origin null)", () => {
+  assert.ok(!/type=["']module["']/.test(html), "index.html must not load module scripts");
+  assert.match(html, /<script src="view\.js"/);
+  assert.match(html, /<script src="app\.js"/);
+  assert.ok(!/\bimport\s+[^;]*from\s+["']\.\//.test(app), "app.js must not use ESM import");
+  assert.match(app, /window\.FTView/);
+});
 test("no inline event handlers (CSP)", () => {
   assert.ok(!/\son[a-z]+\s*=\s*["']/i.test(html), "index.html inline handlers");
   assert.ok(!/onerror\s*=\s*["']/.test(app), "inline onerror in app.js");

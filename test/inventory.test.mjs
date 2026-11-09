@@ -1,11 +1,13 @@
-import { test } from "bun:test";
+import { test, afterAll } from "bun:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { configDir, readLocal } from "../src/inventory.js";
 
-const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "ft-inv-"));
+const TMP = [];
+const tmp = () => { const d = fs.mkdtempSync(path.join(os.tmpdir(), "ft-inv-")); TMP.push(d); return d; };
+afterAll(() => { for (const d of TMP) { try { fs.rmSync(d, { recursive: true, force: true }); } catch {} } });
 const withEnv = (env, fn) => { const old = {}; for (const k of Object.keys(env)) { old[k] = process.env[k]; if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k]; } try { return fn(); } finally { for (const k of Object.keys(old)) { if (old[k] === undefined) delete process.env[k]; else process.env[k] = old[k]; } } };
 
 test("configDir: input.directory (settings.Dir) wins", () => withEnv({ MAGPIE_CONFIG_DIR: undefined, XDG_CONFIG_HOME: undefined }, () => {

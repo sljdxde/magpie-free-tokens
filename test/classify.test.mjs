@@ -1,4 +1,4 @@
-import { test } from "bun:test";
+import { test, afterAll } from "bun:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
@@ -9,6 +9,9 @@ import { readLocal } from "../src/inventory.js";
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Shanghai" });
 const deal = (o = {}) => ({ id: "x", kind: "daily", title: "t", provider: "DeepSeek", detail: "", url: "https://example.com/a", tags: ["a"], endsAt: null, validity: "", verifiedAt: "2026-11-09T00:00:00Z", yuan: null, label: "", face: "", counted: true, ...o });
 const ft = (deals) => ({ deals, basis: { usdCny: 6.67 } });
+const TMP = [];
+const mkTmp = (p) => { const d = fs.mkdtempSync(path.join(os.tmpdir(), p)); TMP.push(d); return d; };
+afterAll(() => { for (const d of TMP) { try { fs.rmSync(d, { recursive: true, force: true }); } catch {} } });
 
 test("meta sums: today counts only counted yuan; faceTotal all priced", () => {
   const p = buildPayload(ft([deal({ provider: "DeepSeek", yuan: 10, counted: true }), deal({ provider: "Zed", yuan: 5, counted: false }), deal({ provider: "MiniMax", yuan: null })]), { providers: [], checkin: {} });
@@ -56,7 +59,7 @@ test("three tiers with installed+claimed", () => {
 });
 
 test("config unknown when providers unreadable; checkin unknown when null", () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ft-cl-"));
+  const dir = mkTmp("ft-cl-");
   fs.writeFileSync(path.join(dir, "plugin-providers.json"), "{bad");
   fs.writeFileSync(path.join(dir, "plugin-checkin.json"), "{bad");
   const p = buildPayload(ft([deal({ provider: "阿里云 Qoder", url: "https://docs.qoder.cn/x" })]), readLocal(dir));
@@ -68,4 +71,10 @@ test("empty/missing deals => empty list", () => {
   const p = buildPayload({}, { providers: [], checkin: {} });
   assert.deepEqual(p.deals, []);
   assert.equal(p.meta.totalDeals, 0);
+});
+
+test("checkin null guard: providers valid + checkin null => unknown, no throw", () => {
+  const p = buildPayload(ft([deal({ provider: "阿里云 Qoder", url: "https://qoder.cn/x" })]), { providers: [{ id: "qoder-cn", signedIn: true }], checkin: null });
+  assert.equal(p.demoState.checkinKnown, false);
+  assert.equal(p.demoState.installed["qoder-cn"].checkin, null);
 });

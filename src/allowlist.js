@@ -3,7 +3,7 @@
 export const OFFICIAL_PROVIDERS = new Set([
   "豆包", "华为云 OfficeAce", "秒悟 Meoo", "魔搭社区", "商汤小浣熊", "腾讯 ima",
   "Cloudflare", "fal", "MiniMax", "阿里云 Qoder", "字节 TRAE", "腾讯 WorkBuddy",
-  "WPS 灵犀", "Nace AI", "蚂蚁百灵", "腾讯 EdgeOne", "书生·端砚", "腾讯云 ADP",
+  "WPS 灵犀", "蚂蚁百灵", "腾讯 EdgeOne", "书生·端砚", "腾讯云 ADP",
   "ElevenLabs", "Zed", "百度千帆", "硅基流动", "阿里云百炼", "超算互联网", "DeepSeek",
   "腾讯云 TokenHub", "火山方舟", "华为云码道", "腾讯云开发", "智谱 AutoClaw",
   "智谱 ZCode", "商汤日日新", "OpenCode", "阶跃星辰", "SoMark",

@@ -1,4 +1,4 @@
-import { test } from "bun:test";
+import { test, afterAll } from "bun:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
@@ -6,7 +6,9 @@ import path from "node:path";
 import { refresh } from "../src/refresh.js";
 import pkg from "../index.js";
 
-const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "ft-idx-"));
+const TMP = [];
+const tmp = () => { const d = fs.mkdtempSync(path.join(os.tmpdir(), "ft-idx-")); TMP.push(d); return d; };
+afterAll(() => { for (const d of TMP) { try { fs.rmSync(d, { recursive: true, force: true }); } catch {} } });
 const deal = { id: "x", kind: "daily", title: "t", provider: "DeepSeek", detail: "", url: "https://e/x", tags: [], endsAt: null, validity: "", verifiedAt: "2026-11-09T00:00:00Z", yuan: 3, label: "", face: "", counted: true };
 
 test("refresh success writes payload (opts injected)", async () => {
