@@ -24,9 +24,10 @@ test("load order: view.js before app.js", () => {
 test("every mapping provider is in the official allowlist (else it'd never show)", () => {
   for (const k of Object.keys(MAPPING)) assert.ok(OFFICIAL_PROVIDERS.has(k), `mapping provider not allowlisted: ${k}`);
 });
-test("allowlist non-empty and excludes unverified relay (Nace AI)", () => {
+test("allowlist non-empty; first-party vendors kept (Nace AI is a vendor, not a relay)", () => {
   assert.ok(OFFICIAL_PROVIDERS.size > 0);
-  assert.ok(!OFFICIAL_PROVIDERS.has("Nace AI"));
+  assert.ok(OFFICIAL_PROVIDERS.has("Nace AI"));
+  assert.ok(OFFICIAL_PROVIDERS.has("DeepSeek"));
 });
 test("view KIND covers every classify kind", () => {
   const V = globalThis.FTView;

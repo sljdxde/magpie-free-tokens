@@ -31,8 +31,11 @@
     const url = safeUrl(d.url);
     let sub = "", act = "";
     if (b.key === "ready") {
-      if (d.kind === "daily" && b.checkin != null) { const done = b.checkin === "claimed" || b.checkin === "done"; sub = done ? `<span class="dot ok"></span>今日已领` : `<span class="dot warn"></span>今日可领`; }
-      else sub = `<span class="dot ok"></span>可用`;
+      if (d.kind === "daily" && b.checkin != null) {
+        if (b.checkin === "claimed" || b.checkin === "done") sub = `<span class="dot ok"></span>今日已领`;
+        else if (b.checkin === "none") sub = `<span class="dot warn"></span>今日可领`;
+        else sub = `<span class="dot ok"></span>可用`;
+      } else sub = `<span class="dot ok"></span>可用`;
     } else if (b.key === "setup") {
       sub = `<span class="dot mut"></span>插件：${esc(b.m.name)}`;
       const pid = resolvePid(d, b.m);

@@ -78,3 +78,15 @@ test("checkin null guard: providers valid + checkin null => unknown, no throw", 
   assert.equal(p.demoState.checkinKnown, false);
   assert.equal(p.demoState.installed["qoder-cn"].checkin, null);
 });
+
+test("counted must be exactly true (undefined counted excluded from today)", () => {
+  const p = buildPayload(ft([{ id: "x", kind: "daily", title: "t", provider: "DeepSeek", url: "https://e/x", tags: [], endsAt: null, validity: "", verifiedAt: null, yuan: 7, label: "", face: "", evidence: "official" }]), { providers: [], checkin: {} });
+  assert.equal(p.meta.todayClaimable, 0);
+  assert.equal(p.meta.faceTotal, 7);
+  assert.equal(p.deals[0].counted, false);
+});
+test("provider whitespace trimmed and still allowlisted", () => {
+  const p = buildPayload(ft([deal({ provider: "  DeepSeek  " })]), { providers: [], checkin: {} });
+  assert.equal(p.deals.length, 1);
+  assert.equal(p.deals[0].provider, "DeepSeek");
+});

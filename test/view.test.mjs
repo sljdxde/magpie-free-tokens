@@ -36,7 +36,7 @@ test("summaryHtml", () => { const s = V.summaryHtml({ todayClaimable: 201 }, 50,
 test("rowHtml ready checkin states + yuan", () => {
   const b = { provider: "阿里云 Qoder", url: "https://qoder.cn/x", kind: "daily", title: "t", yuan: 12, label: "≈12" };
   const r = (checkin) => V.rowHtml(b, ctx({ demoState: { configKnown: true, installed: { "qoder-cn": { signedIn: true, checkin } } } }));
-  assert.match(r("claimed"), /今日已领/); assert.match(r("done"), /今日已领/); assert.match(r("none"), /今日可领/); assert.match(r(null), /可用/);
+  assert.match(r("claimed"), /今日已领/); assert.match(r("done"), /今日已领/); assert.match(r("none"), /今日可领/); assert.match(r(null), /可用/); assert.match(r("failed"), /可用/); assert.match(r("inactive"), /可用/);
   assert.match(r("claimed"), /¥12/); assert.match(r("claimed"), /<small>≈12<\/small>/);
   assert.match(V.rowHtml({ ...b, kind: "monthly" }, ctx({ demoState: { configKnown: true, installed: { "qoder-cn": { signedIn: true } } } })), /可用/);
 });

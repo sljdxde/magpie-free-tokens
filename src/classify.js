@@ -36,7 +36,7 @@ function pick(x) {
     id: typeof x.id === "string" ? x.id : String(x.id ?? ""),
     kind: KINDS.has(x.kind) ? x.kind : "other",
     title: String(x.title ?? ""),
-    provider: String(x.provider ?? ""),
+    provider: String(x.provider ?? "").trim(),
     detail: String(x.detail ?? ""),
     url: safeUrl(x.url),
     tags: Array.isArray(x.tags) ? x.tags.filter((t) => typeof t === "string") : [],
@@ -46,14 +46,14 @@ function pick(x) {
     yuan: typeof x.yuan === "number" ? x.yuan : null,
     label: String(x.label ?? ""),
     face: String(x.face ?? ""),
-    counted: x.counted !== false,
+    counted: x.counted === true,
   };
 }
 function countKinds(ds) { const c = {}; for (const d of ds) c[d.kind] = (c[d.kind] || 0) + 1; return c; }
 
 export function buildPayload(ftData, local) {
   // 只保留官方厂商（白名单），杜绝第三方中转站进入 magpie
-  const raw = (ftData.deals || []).filter((x) => x && OFFICIAL_PROVIDERS.has(x.provider));
+  const raw = (ftData.deals || []).filter((x) => x && OFFICIAL_PROVIDERS.has(String(x.provider ?? "").trim()));
   const deals = raw.map(pick);
   const priced = deals.filter((d) => d.yuan != null);
   const today = Math.round(deals.filter((d) => d.counted && d.yuan != null).reduce((s, d) => s + d.yuan, 0));
