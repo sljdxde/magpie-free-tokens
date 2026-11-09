@@ -29,7 +29,7 @@
 
   function applyTheme(dark) { document.documentElement.dataset.theme = dark ? "dark" : "light"; }
   function renderSummary(c) { $("#summary").innerHTML = summaryHtml(meta, deals.length, c); }
-  function renderBuckets(c) { $("#buckets").innerHTML = TABS.map(([k, label, hint]) => `<button class="bucket b-${k} ${state.tab === k ? "on" : ""}" data-tab="${k}"><div class="bnum">${c[k]}</div><div class="blabel">${esc(label)}</div><div class="bhint">${esc(hint)}</div></button>`).join(""); $$(".bucket").forEach((b) => (b.onclick = () => { state.tab = b.dataset.tab; render(); })); }
+  function renderBuckets(c) { const el = $("#buckets"); el.innerHTML = TABS.map(([k, label]) => `<button type="button" class="tile ${state.tab === k ? "on" : ""}" data-tab="${k}" aria-pressed="${state.tab === k}"><span class="k">${esc(label)}</span><span class="v">${c[k]}</span></button>`).join(""); $$(".tile", el).forEach((b) => (b.onclick = () => { state.tab = b.dataset.tab; render(); })); }
   function renderList() {
     const q = state.q.trim().toLowerCase();
     const rows = deals.filter((d) => bucketOf(d, mapping, demoState).key === state.tab)
