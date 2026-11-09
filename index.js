@@ -15,7 +15,7 @@ let timer = null;
 function writeAtomic(file, text) { const t = file + ".tmp"; fs.writeFileSync(t, text); fs.renameSync(t, file); }
 function loadSnapshot() { try { return JSON.parse(fs.readFileSync(SNAPSHOT, "utf8")); } catch { return { deals: [], basis: null }; } }
 
-export async function refresh(input) {
+const refresh = async (input) => {
   const dir = configDir(input);
   const local = readLocal(dir);
   let ft, stale = false;
@@ -28,11 +28,11 @@ export async function refresh(input) {
   return payload;
 }
 
-export const FreeTokens = async (input) => {
+const server = async (input) => {
   refresh(input).catch((e) => console.error("[free-tokens]", e.message));
   if (!timer) timer = setInterval(() => refresh(input).catch((e) => console.error("[free-tokens]", e.message)), TTL);
   return {};
 };
-export default { id: "free-tokens", server: FreeTokens };
+export default { id: "free-tokens", server };
 
 if (import.meta.main) { refresh({}).then((p) => { if (!p) process.exit(1); console.log(JSON.stringify({ today: p.meta.todayClaimable, total: p.meta.totalDeals, icons: Object.keys(p.icons || {}).length, stale: p.meta.stale }, null, 2)); process.exit(0); }).catch((e) => { console.error(e); process.exit(1); }); }
