@@ -1,19 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Token 羊毛">
-  <defs>
-    <linearGradient id="ft-g" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7062f3"/>
-      <stop offset="1" stop-color="#4f46e5"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="16" fill="url(#ft-g)"/>
-  <!-- coin (bigger) -->
+  <rect width="64" height="64" rx="16" fill="#4f46e5"/>
   <circle cx="29.5" cy="35.5" r="15" fill="none" stroke="#ffffff" stroke-width="3.4"/>
-  <!-- ¥ -->
   <path d="M23.8 29.2 L29.5 36.2 L35.2 29.2" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M29.5 36.2 V44.4" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
   <path d="M24.6 39.2 H34.4 M24.6 42.4 H34.4" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-  <!-- sparkle (brighter, larger) -->
-  <path d="M47 11.5 l2 5.1 5.1 2 -5.1 2 -2 5.1 -2 -5.1 -5.1 -2 5.1 -2 z" fill="#ffd21f"/>
-  <path d="M47 11.5 l2 5.1 5.1 2 -5.1 2 -2 5.1 -2 -5.1 -5.1 -2 5.1 -2 z" fill="none" stroke="#fff2b0" stroke-width="0.8" opacity="0.9"/>
-  <circle cx="51" cy="30.5" r="1.7" fill="#ffffff" opacity="0.95"/>
+  <path d="M47 11.5 l2 5.1 5.1 2 -5.1 2 -2 5.1 -2 -5.1 -5.1 -2 5.1 -2 z" fill="#ffffff"/>
 </svg>

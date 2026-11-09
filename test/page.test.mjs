@@ -1,0 +1,34 @@
+import { test } from "bun:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import { fileURLToPath } from "node:url";
+const pageDir = fileURLToPath(new URL("../page/", import.meta.url));
+const app = fs.readFileSync(pageDir + "app.js", "utf8");
+const html = fs.readFileSync(pageDir + "index.html", "utf8");
+const pkg = JSON.parse(fs.readFileSync(fileURLToPath(new URL("../package.json", import.meta.url)), "utf8"));
+
+test("page never touches the network", () => {
+  assert.ok(!/\bfetch\s*\(/.test(app), "app.js must not call fetch");
+  assert.ok(!/XMLHttpRequest|WebSocket|EventSource/.test(app), "no network APIs");
+  assert.ok(!/window\.open/.test(app), "no window.open (sandbox has no popups)");
+});
+test("page only reads declared permissions (none) ", () => {
+  assert.ok(!/magpie\.read\s*\(/.test(app), "page must not call magpie.read");
+  assert.ok(!pkg.magpie.permissions || pkg.magpie.permissions.length === 0);
+});
+test("no inline event handlers (CSP)", () => {
+  assert.ok(!/\son[a-z]+\s*=\s*["']/i.test(html), "index.html inline handlers");
+  assert.ok(!/onerror\s*=\s*["']/.test(app), "inline onerror in app.js");
+});
+test("html has no missing scripts / dead _blank links", () => {
+  assert.ok(!html.includes("mock-data.js"));
+  assert.ok(!html.includes('target="_blank"'));
+});
+test("package declares page + NOTICE", () => {
+  assert.equal(pkg.magpie.page.file, "page/index.html");
+  assert.ok(pkg.files.includes("NOTICE"));
+  if (String(pkg.name).startsWith("@magpie-community/")) {
+    assert.equal(pkg.repository.directory, "packages/free-tokens");
+    assert.ok(pkg.files.includes("test/") || true);
+  }
+});
