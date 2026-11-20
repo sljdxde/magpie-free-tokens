@@ -19,11 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # 故意不传 registry-url：setup-node 会写 .npmrc 里的
+      # //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}，
+      # 而 OIDC 场景下该变量为空，空 _authToken 会盖掉 OIDC 认证 → 401/ENEEDAUTH。
+      # 不设 registry-url 时 npm 默认就走 registry.npmjs.org，只依赖 OIDC 令牌。
       - name: Setup Node (npm >= 11.5.1 for OIDC)
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          registry-url: https://registry.npmjs.org
 
       - name: Ensure recent npm
         run: npm install -g npm@latest
