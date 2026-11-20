@@ -44,7 +44,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sljdxde/magpie-free-tokens.git"
+    "url": "git+https://github.com/sljdxde/magpie-free-tokens.git"
   },
   "homepage": "https://github.com/sljdxde/magpie-free-tokens",
   "bugs": {

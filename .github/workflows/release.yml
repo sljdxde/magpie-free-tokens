@@ -1,5 +1,9 @@
 name: Release
 
+# 认证：npm Trusted Publishing（OIDC，免令牌）。
+# 需在 npmjs.com → 包 Settings → Trusted publishing 里绑定：
+#   Repository owner=sljdxde, Repository name=magpie-free-tokens, Workflow filename=release.yml
+
 on:
   release:
     types: [published]
@@ -7,21 +11,24 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+  id-token: write # 必需：换取 npm 的短时发布凭证
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Setup Node (for npm publish)
+      - name: Setup Node (npm >= 11.5.1 for OIDC)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: https://registry.npmjs.org
 
-      - name: Setup Bun (for install / tests)
+      - name: Ensure recent npm
+        run: npm install -g npm@latest
+
+      - name: Setup Bun (install / tests)
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -44,7 +51,5 @@ jobs:
       - name: Test
         run: bun test
 
-      - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm (OIDC, no token)
+        run: npm publish --access public --provenance
