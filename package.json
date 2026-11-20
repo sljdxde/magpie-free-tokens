@@ -1,9 +1,13 @@
 {
   "name": "magpie-free-tokens",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "AIHOT Token 羊毛：在 magpie 里看哪些羊毛已配置可用、哪些差个插件、哪些还没插件。",
   "type": "module",
   "main": "./index.js",
+  "scripts": {
+    "test": "bun test",
+    "prepublishOnly": "bun test"
+  },
   "files": [
     "index.js",
     "src/",
@@ -46,5 +50,8 @@
   "bugs": {
     "url": "https://github.com/sljdxde/magpie-free-tokens/issues"
   },
-  "author": "Mingchen Yu <502460524@qq.com>"
+  "author": "Mingchen Yu <502460524@qq.com>",
+  "devDependencies": {
+    "happy-dom": "^21.0.4"
+  }
 }

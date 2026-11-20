@@ -18,7 +18,7 @@
     return { key: "ready", m, checkin: d.kind === "daily" ? st.checkin : null };
   }
   function counts(deals, mapping, demoState) { const c = { ready: 0, setup: 0, none: 0 }; for (const d of deals) c[bucketOf(d, mapping, demoState).key]++; return c; }
-  function avatarHtml(provider, icons) { const src = icons[provider]; if (src) return `<div class="avatar logo" data-ini="${esc(initials(provider))}" data-col="${colorFor(provider)}"><img src="${esc(src)}" alt=""></div>`; return `<div class="avatar gen" style="background:${colorFor(provider)}">${esc(initials(provider))}</div>`; }
+  function avatarHtml(provider, icons) { const src = icons[provider]; if (src) return `<div class="avatar logo" data-ini="${esc(initials(provider))}" data-col="${colorFor(provider)}"><img src="${esc(src)}" alt="" loading="lazy" decoding="async"></div>`; return `<div class="avatar gen" style="background:${colorFor(provider)}">${esc(initials(provider))}</div>`; }
   function summaryHtml(meta, total, c) { return `今天还能领 <b>¥${esc(meta.todayClaimable)}</b><span class="sep">·</span>共 <b>${total}</b> 项羊毛<span class="sep">·</span>已配置可用 <b>${c.ready}</b> · 待配置 <b>${c.setup}</b> · 暂无插件 <b>${c.none}</b>`; }
   // 安装/登录气泡的文案（纯函数，便于单测：确保用完整 npm 包名，不用短名）
   function installSteps(npm) { return ["在 magpie「插件 → 发现」页最下方「已有想装的?」输入框，粘贴下面的包名，点「安装」", `（终端方式：magpie plugin add ${npm}）`]; }

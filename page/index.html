@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>Token 羊毛</title>
 <link rel="stylesheet" href="style.css">
 <script src="_magpie/bridge.js"></script>
@@ -17,15 +18,24 @@
     </div>
   </header>
   <p class="summary" id="summary"></p>
-  <div class="tiles" id="buckets"></div>
+  <div class="tiles" id="buckets" role="tablist" aria-label="羊毛状态分档"></div>
   <p class="hint" id="tabhint"></p>
   <label class="find">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-    <input id="q" type="search" placeholder="在这一档里搜索厂商或羊毛…" autocomplete="off">
+    <input id="q" type="search" placeholder="在这一档里搜索厂商或羊毛…" aria-label="搜索厂商或羊毛" autocomplete="off">
   </label>
-  <div class="list" id="list"></div>
-  <p class="empty" id="empty" style="display:none">这一档没有符合条件的羊毛</p>
+  <div class="list" id="list" role="tabpanel" aria-describedby="tabhint">
+    <div id="rows"></div>
+    <p class="empty" id="empty" role="status" style="display:none">这一档没有符合条件的羊毛</p>
+  </div>
+  <p class="sr-only" id="live" role="status" aria-live="polite"></p>
   <p class="foot-note" id="footNote"></p>
-  <div class="toast" id="toast"></div>
+  <dialog id="pop" class="pop-dialog" aria-labelledby="pop-title" closedby="any">
+    <div class="pop-h" id="pop-title"></div>
+    <ol class="pop-steps"></ol>
+    <div class="pop-copy"><input id="pop-copy-input" name="copy" type="text" readonly spellcheck="false" aria-label="要复制的内容"><button type="button" class="pop-btn" data-copy>复制</button></div>
+    <div class="pop-tip" role="status" aria-live="polite"></div>
+    <div class="pop-foot"><button type="button" class="pop-close">关闭</button></div>
+  </dialog>
 </body>
 </html>

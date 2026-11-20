@@ -228,9 +228,9 @@ export default { id: "free-tokens", server: FreeTokens };
 
 **厂商图标**：优先用 **magpie 自带的品牌图标**（从 `internal/gui/assets/icons` 拷入 `page/brand/`，已覆盖 22 家，如 doubao-color.svg / minimax-color.svg / opencode.svg / qoder.svg …）；表外的厂商一律用**首字母/首字色块**兜底。图标随包内置、本地同源加载，不联网抓图，也不再用 AIHOT 的 favicon（此前 favicon 是 WebP 却存成 .png，WebKit 渲染异常——已弃用）。
 
-**复制与登录引导（沙盒限制的应对）**：插件页 iframe 的 `navigator.clipboard` 常被拦，故「安装插件 / 去登录」都弹出**气泡**：含分步路径 + 一个 `readonly` 已全选的输入框（保证可 ⌘C/Ctrl+C 手动复制），并尝试自动复制。安装气泡给的是**可直接粘进「插件 → 发现」页最下方「已有想装的?」输入框的 npm 包名**（如 `@magpie-community/opencode-zed-auth`；该框接受 npm 包名 / `github:owner/repo` / 本机文件夹，不接受整条命令），并附终端命令 `magpie plugin add <完整 npm 包名>`（如 `magpie plugin add @magpie-community/opencode-zed-auth`；**不用短名**——短名可能命中被抢注的无作用域包）。登录给「插件→已安装→该行登录」路径 + `magpie plugin login <pid>`。
+**复制与登录引导（沙盒限制的应对）**：插件页 iframe 的 `navigator.clipboard` 常被拦，故「安装插件 / 去登录」都弹出**原生 `<dialog>` 弹层**（焦点陷阱 / Esc / 焦点归还由浏览器负责；`closedby` 不可用时用遮罩 pointerup 兜底）：含分步路径 + 一个 `readonly` 已全选的输入框（保证可 ⌘C/Ctrl+C 手动复制），并尝试自动复制，复制结果经 `role="status"` 播报。安装气泡给的是**可直接粘进「插件 → 发现」页最下方「已有想装的?」输入框的 npm 包名**（如 `@magpie-community/opencode-zed-auth`；该框接受 npm 包名 / `github:owner/repo` / 本机文件夹，不接受整条命令），并附终端命令 `magpie plugin add <完整 npm 包名>`（如 `magpie plugin add @magpie-community/opencode-zed-auth`；**不用短名**——短名可能命中被抢注的无作用域包）。登录给「插件→已安装→该行登录」路径 + `magpie plugin login <pid>`。
 
-> 原型见 `page/`，截图 `preview-ready.jpg` / `preview-setup.jpg` / `preview-dark.jpg`（三档视图）。
+> 原型见 `page/`，截图 `preview-ready.jpg` / `preview-setup.jpg` / `preview-install.jpg` / `preview-dark.jpg`。交互细节：三档为 `role=tablist` 且支持方向键；列表用原生 `<dialog>` 弹层；复制反馈经 `role="status"` 播报；整体支持 `prefers-reduced-motion` 与 `color-scheme` 亮暗自适应。
 
 **关于「安装插件」能否一键跳到安装界面（源码核实，重要限制）**：magpie 页面桥接只暴露 `theme / options.get / options.set / read`（`internal/gui/pluginpages.js` 的 `switch(method)`），**没有导航或执行安装的 API**；页面沙盒 `sandbox allow-scripts` 也禁止 top-navigation / popup。`magpie://` 深链（`importlink.go`）只支持导入「供应商 base URL + key」，**不能安装 npm 插件包**。所以页面**无法**一键跳到插件安装界面并安装。
 

@@ -21,9 +21,9 @@ src/inventory.js    # 读 ~/.config/magpie（providers / checkin；读失败=未
 src/classify.js     # 白名单过滤 + 脱敏（kind 白名单 / url 限 https）+ 三档状态
 src/allowlist.js    # 官方厂商白名单
 src/mapping.js      # 羊毛→插件（provider → 完整 npm 包名）
-page/               # index.html / app.js / style.css / brand/（图标）/ icon.svg
+page/               # index.html / app.js / style.css / brand/（图标）/ icon.svg（原生 <dialog> 弹层 / tablist 语义 / 亮暗自适应）
 NOTICE              # 品牌图标（lobe-icons, MIT）与数据来源署名
-test/               # 离线测试（host 分类 + 页面静态校验）
+test/               # 离线测试（host 分类 + 页面静态校验 + happy-dom 交互测试）
 ```
 
 ## 数据与合规
@@ -35,6 +35,16 @@ test/               # 离线测试（host 分类 + 页面静态校验）
 ```bash
 bun test
 ```
+
+## 发布（CI 自动）
+- **日常推送 / PR**：`.github/workflows/ci.yml` 自动 `bun install` + `bun test`。
+- **发布**：推送 `vX.Y.Z` tag 并在 GitHub 创建 Release 后，`.github/workflows/release.yml` 会依次「装依赖 → 跑测试 → 校验 tag 与 package.json 版本一致 → `npm publish --provenance`」。
+- **一次性配置**：在 npm 生成一个对 `magpie-free-tokens` 有发布权限的 Automation token，写入仓库 secret：
+  ```bash
+  gh secret set NPM_TOKEN   # 粘贴 token 后回车
+  ```
+  也可在 GitHub 仓库 Settings → Secrets and variables → Actions 添加同名 `NPM_TOKEN`。
+- 之后每次发版只需建 Release，npm 包自动出，无需本地手动 `npm publish`。
 
 ## 安装（本地）
 ```bash
